@@ -152,7 +152,7 @@ conn.once('open', async () => {
 
 const app = express();
 const port = 3000;
-app.use(cors({ origin: 'http://localhost:4200' }));
+app.use(cors({ origin: 'https://forntend-weightagesplit-1.onrender.com' }));
 
 app.use(bodyParser.json());
 // const upload = multer({ dest: 'uploads/' });
