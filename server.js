@@ -287,7 +287,7 @@ async function processZipFile(zipFilePath, evaluationTypes, projectType, fileNam
         } else if(projectType.toLowerCase() == 'webapi'){
           // dotnetAppZipFilePath = path.join('dotnetappwebapi.zip');
           // get the zip dotnetappwebapi from bd with id & store it in the folder
-          const fileId = new mongoose.Types.ObjectId('66f5732d341f421fb50f9e08');
+          const fileId = new mongoose.Types.ObjectId('66f5ceeca5101faa6066ffad');
           const downloadStream = gfsDefaultScaffolding.openDownloadStream(fileId);
           // create a folder with name defaultScaffoldings to store the zip file
           const defaultScaffoldingFolder = path.join(__dirname, 'defaultScaffoldings');
