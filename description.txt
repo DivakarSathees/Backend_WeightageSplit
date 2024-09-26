@@ -1,0 +1,12 @@
+Carservice.cs
+CarserviceController.cs
+This file has a namespace: dotnetapp.Controllers
+1. CarserviceController:The controller class name should be "CarserviceController" with the following Methods:
+OtherDbContext.cs
+This file has a DbContext class: OtherDbContext
+2. OtherDbContext:
+    • The OtherDbContext class should be created in Models folder with namespace dotnetapp.Models.
+    • Define a DbSet for the tables(Movies, and Actors) in the OtherDbContext class.
+ShoppingCartController.cs
+This file has a namespace: dotnetapp.Controllers
+2. ShoppingCartController:The controller class name should be "ShoppingCartController" with the following Methods:
