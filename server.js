@@ -697,6 +697,25 @@ async function processZipFromDB(fileId, evaluationTypes, projectType, fileName) 
 // });
 
 
+// endpoint to delete all the files from the db in uploads collection & dont delete the collection
+app.delete('/deleteall', async (req, res) => {
+  try {
+    // Delete all files from the uploads collection
+    await gfsUploads.drop();
+    await gfsFs.drop();
+    console.log(res.status(204));
+    // send response to the client in json format
+    res.json({ message: 'All files deleted successfully' });
+    
+  } catch (error) {
+    console.error('An error occurred:', error);
+    res.status(500).send('An error occurred while deleting files');
+  }
+});
+
+
+
+
 
 app.post('/model', upload.single('file'), async (req, res) => {
   const uploadedFile = req.file;
