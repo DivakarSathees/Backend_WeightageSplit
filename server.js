@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const readline = require('readline');
 const multer = require('multer');
 const cors = require('cors');
-
+const junitShFile = require('./junitShFile');
 const AdmZip = require('adm-zip');
 const  Description  = require('./Description');
 const archiver = require('archiver');
@@ -55,7 +55,7 @@ conn.once('open', async () => {
     bucketName: 'defaultScaffolding'
   });
 
-  // const filePath = './dotnetappwebapi.zip';
+  // const filePath = './springapp.zip';
   // if (!fs.existsSync(filePath)) {
   //   console.error('File does not exist:', filePath);
   //   return;
@@ -68,36 +68,36 @@ conn.once('open', async () => {
   //   bucketName: 'defaultScaffolding'
   // });
 
-    // const zipStream = fs.createReadStream(filePath);
+  //   const zipStream = fs.createReadStream(filePath);
     
-    // zipStream.on('error', (err) => {
-    //   console.error('Error reading file:', err);
-    // });
+  //   zipStream.on('error', (err) => {
+  //     console.error('Error reading file:', err);
+  //   });
 
-    // zipStream.on('data', (chunk) => {
-    //   console.log(`Reading chunk of size: ${chunk.length}`);
-    // });
+  //   zipStream.on('data', (chunk) => {
+  //     console.log(`Reading chunk of size: ${chunk.length}`);
+  //   });
 
-    // zipStream.on('end', () => {
-    //   console.log('File read complete.');
-    // });
+  //   zipStream.on('end', () => {
+  //     console.log('File read complete.');
+  //   });
 
-    // const uploadStream = bucket.openUploadStream('dotnetappwebapi.zip');
-    // const id = uploadStream.id;
-    // console.log('File upload started with id:', id);
+  //   const uploadStream = bucket.openUploadStream('springapp.zip');
+  //   const id = uploadStream.id;
+  //   console.log('File upload started with id:', id);
 
-   // // Pipe file to MongoDB GridFS
-    // zipStream.pipe(uploadStream)
-    //   .on('finish', async () => {
-    //     console.log('Zip file stored in MongoDB:', id);
-    //   })
-    //   .on('error', (err) => {
-    //     console.error('Error storing zip in MongoDB:', err);
-    //   });
+  //  // Pipe file to MongoDB GridFS
+  //   zipStream.pipe(uploadStream)
+  //     .on('finish', async () => {
+  //       console.log('Zip file stored in MongoDB:', id);
+  //     })
+  //     .on('error', (err) => {
+  //       console.error('Error storing zip in MongoDB:', err);
+  //     });
 
-    // uploadStream.on('close', () => {
-    //   console.log('Upload stream closed.');
-    // });
+  //   uploadStream.on('close', () => {
+  //     console.log('Upload stream closed.');
+  //   });
 
   //   const downloadStream = bucket.openDownloadStream(new ObjectId('66f57215e29957b57eb0b6b6'));
   //   const fileStream = fs.createWriteStream(`./output/path/ang.zip`);
@@ -153,6 +153,7 @@ conn.once('open', async () => {
 const app = express();
 const port = 3000;
 app.use(cors({ origin: 'https://forntend-weightagesplit-1.onrender.com' }));
+// app.use(cors({ origin: 'http://localhost:4200' }));
 
 app.use(bodyParser.json());
 // const upload = multer({ dest: 'uploads/' });
@@ -483,6 +484,99 @@ async function processZipFile(zipFilePath, evaluationTypes, projectType, fileNam
         subfolderContents = await readFolderContents(subfolderPath);      
         console.log("sub foldersssss123 "+subfolderContents);
       }
+      console.log("1diva123 "+evaluationTypes);
+      
+      if (evaluationTypes.includes('JUnit')){
+        console.log("JUnit here");
+        const zipContents = await readFolderContents(extractionFolder);
+        console.log(zipContents);
+        unitFilePath = zipContents.find((file) => file.endsWith('.java'));
+        console.log(unitFilePath);
+        const unitFileName = unitFilePath.split('.')[0];
+        console.log("name"+unitFileName);
+        console.log("name"+fileName);
+        // // var javaAppZipFilePath;
+        // const javaAppZipFilePath = path.join(__dirname, 'springapp.zip');
+        // if(!fs.existsSync(javaAppZipFilePath)){
+        //   console.error('File does not exist:', javaAppZipFilePath);
+        //   return;
+        // }
+        const fileId = new mongoose.Types.ObjectId('66f6947369172bda2e86a478');
+        const downloadStream = gfsDefaultScaffolding.openDownloadStream(fileId);
+        // create a folder with name defaultScaffoldings to store the zip file
+        const defaultScaffoldingFolder = path.join(__dirname, 'defaultScaffoldings');
+        if (!fs.existsSync(defaultScaffoldingFolder)) {
+          fs.mkdirSync(defaultScaffoldingFolder, { recursive: true });
+        }
+        const springAppZipFilePath = path.join(defaultScaffoldingFolder, 'springapp.zip');
+        const writeStream = fs.createWriteStream(springAppZipFilePath);
+
+        downloadStream.pipe(writeStream);
+        writeStream.on('close', () => {
+          console.log('File downloaded successfully');
+      
+          // Now check if the file exists
+          if (!fs.existsSync(springAppZipFilePath)) {
+            console.error('File does not exist:', springAppZipFilePath);
+            return;
+          }
+      
+          // Extract the zip file to the folder
+          // const angularAppZip = new AdmZip(angularAppZipFilePath);
+          // angularAppZip.extractAllTo(extractionFolder);
+          // console.log('File extracted successfully');
+        });
+
+        writeStream.on('error', (err) => {
+          console.error('Error writing file:', err);
+        }
+        );
+        const javaAppZip = new AdmZip(springAppZipFilePath);
+        javaAppZip.extractAllTo(extractionFolder);
+        console.log(extractionFolder);
+
+        const javaAppFolder = path.join(extractionFolder, 'springapp');
+        const renamedJavaAppFolder = path.join(extractionFolder, fileName);
+        if(fs.existsSync(renamedJavaAppFolder)){
+          console.log("folder exists");
+          
+          const javaAppFolder = path.join(extractionFolder, 'springapp');
+          const javaAppContents = await readFolderContents(javaAppFolder);
+          for (const file of javaAppContents) {
+            const destinationFilePath = path.join(renamedJavaAppFolder);
+            // fs.copyFileSync(path.join(angularAppFolder, file), destinationFilePath);
+            // console.log(`Copied ${file} to: ${destinationFilePath}`);
+            await fs1.ensureDir(destinationFilePath);
+            await fs1.copy(path.join(javaAppFolder), destinationFilePath);
+            console.log(`Copied ${file} to: ${destinationFilePath}`);
+
+          }
+        } else {  
+          fs.renameSync(javaAppFolder, renamedJavaAppFolder);
+          console.log(`Renamed ${javaAppFolder} to ${renamedJavaAppFolder}`);
+        }
+
+        const destinationFolder = path.join(extractionFolder, fileName, 'junit', 'test', 'java', 'com', 'example', 'springapp');
+        if (!fs.existsSync(destinationFolder)) {
+          fs.mkdirSync(destinationFolder, { recursive: true });
+          console.log(`Created destination folder: ${destinationFolder}`);
+        }
+        for (const file of zipContents) {
+          const destinationFilePath = path.join(destinationFolder, path.basename(file));
+          if(file.endsWith('.java')){
+            fs.copyFileSync(path.join(extractionFolder, file), destinationFilePath);
+            console.log(`Copied ${file} to: ${destinationFilePath}`);
+          }
+        }
+        const zipfullContents = await readFolderContents(extractionFolder);
+        dynamicFolderName = zipfullContents.find((folder) =>
+          fs.statSync(path.join(extractionFolder, folder)).isDirectory()
+        );
+        console.log(dynamicFolderName);
+        const subfolderPath = path.join(extractionFolder, dynamicFolderName);
+        subfolderContents = await readFolderContents(subfolderPath);
+        console.log("sub foldersssss123 "+subfolderContents);
+      }
     }
 
     const runShFilePaths = [];
@@ -522,6 +616,14 @@ console.log("karmaOutputId "+karmaOutputId);
           runShFilePaths.push(runShFilePath1);
           runShFilePaths1.push(runShFilePath1);
           break;
+        case 'junit':
+          const javaFilePath = path.join(extractionFolder, fileName, 'junit', 'test', 'java', 'com', 'example', 'springapp', unitFilePath?unitFilePath:'SpringappApplicationTests.java');
+          outputId = await junitShFile(extractionFolder, fileName, subfolderContents);
+          console.log("outputId "+outputId);
+          const runShFilePath2 = path.join(extractionFolder, fileName, 'junit', 'junit.sh');
+          runShFilePaths.push(runShFilePath2);
+          runShFilePaths1.push(runShFilePath2);
+          break;
         default:
           throw new Error(`Invalid evaluation type: ${type}`);
       }
@@ -556,7 +658,6 @@ app.post('/process-zip', upload.single('zipFile'), async (req, res) => {
   const evaluationTypes = req.body.evaluationTypes.split(',');
   const projectType = req.body.projectType;
   console.log(evaluationTypes);
-  
 
   try {
     console.log(fileId);
@@ -623,10 +724,12 @@ async function processZipFromDB(fileId, evaluationTypes, projectType, fileName) 
           for (const type of evaluationTypes) {
             evaluationTypeWeights[type] = 1.0 / evaluationTypes.length;
           }
+          console.log(runShFilePaths.runShFilePaths);
+          
 
           const jsonObjects = [];
           for (const runShFilePath of runShFilePaths.runShFilePaths) {
-            const jsonString = await processRunShFile(runShFilePath, evaluationTypeWeights);
+            const jsonString = await processRunShFile(runShFilePath, evaluationTypeWeights, extractionFolder, fileName);
             const jsonObject = JSON.parse(jsonString);
             jsonObjects.push(jsonObject);
           }

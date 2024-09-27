@@ -1,12 +1,23 @@
 const fs = require('fs');
 const readline = require('readline');
 const path = require('path');
+const { junitTestNames } = require('./junitTestNames');
 const { readAndStoreEchoStatements } = require('./shEchoStatements');
 
-
-async function processRunShFile(runShFilePath, evaluationTypeWeights) {
+async function processRunShFile(runShFilePath, evaluationTypeWeights, extractionFolder, fileName) {
     try {
-      const echoStatements = await readAndStoreEchoStatements(runShFilePath);
+      console.log("runShFilePath: ", runShFilePath);
+      // if runShFilePath is junit/junit.sh, 
+      if(runShFilePath.includes("junit"))        
+      {
+        echoStatements = await junitTestNames(extractionFolder, fileName);
+        console.log("junitTestNames: ", echoStatements);
+        
+      }else{
+      echoStatements = await readAndStoreEchoStatements(runShFilePath);
+      console.log("echoStatements: ", echoStatements);
+    }
+      
   
       // Determine the evaluation type based on the folder name
       const folderName = path.basename(path.dirname(runShFilePath));
@@ -28,6 +39,15 @@ async function processRunShFile(runShFilePath, evaluationTypeWeights) {
           testcases: [],
           testcase_run_command: `sh /home/coder/project/workspace/nunit/run.sh`, 
           testcase_path: '/home/coder/project/workspace/nunit', 
+        };
+      }
+      if(folderName == "junit")
+      {
+         jsonObject = {
+          evaluation_type: "JUnit", // Use the folder name as the evaluation type
+          testcases: [],
+          testcase_run_command: `sh /home/coder/project/workspace/junit/junit.sh`, 
+          testcase_path: '/home/coder/project/workspace/junit', 
         };
       }
   
