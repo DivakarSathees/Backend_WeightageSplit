@@ -25,6 +25,7 @@ const { ObjectId } = require('mongodb');  // Import ObjectId
 // const mongoose = require('mongoose');
 const { GridFsStorage } = require('multer-gridfs-storage');
 const { GridFSBucket } = require('mongodb');
+const jestShFile = require('./jestShFile');
 const uri = "mongodb+srv://Divakar:HIGHjump@cluster0.grfzp.mongodb.net/Scaffolding?retryWrites=true&w=majority&appName=Cluster0";
 mongoose.connect(uri, {
   // useNewUrlParser: true,
@@ -235,7 +236,9 @@ async function processZipFile(zipFilePath, evaluationTypes, projectType, fileNam
       console.log("sub foldersssss "+subfolderContents);
     }  
     var unitFilePath;
+    var jestFilePath;
     var karmaFilePath;
+    var junitFilePath;
 
     if (!dynamicFolderName) {
       console.log(extractionFolder);
@@ -252,7 +255,7 @@ async function processZipFile(zipFilePath, evaluationTypes, projectType, fileNam
 
         // split the file name with . and get the first part
         const unitFileName = unitFilePath.split('.')[0];
-        console.log(unitFileName);
+        console.log("Diva File "+unitFileName);
         var dotnetAppZipFilePath;
         if(projectType.toLowerCase() == 'mvc'){
           // dotnetAppZipFilePath = path.join('dotnetappmvc.zip');
@@ -490,9 +493,9 @@ async function processZipFile(zipFilePath, evaluationTypes, projectType, fileNam
         console.log("JUnit here");
         const zipContents = await readFolderContents(extractionFolder);
         console.log(zipContents);
-        unitFilePath = zipContents.find((file) => file.endsWith('.java'));
-        console.log(unitFilePath);
-        const unitFileName = unitFilePath.split('.')[0];
+        junitFilePath = zipContents.find((file) => file.endsWith('.java'));
+        console.log(junitFilePath);
+        const unitFileName = junitFilePath.split('.')[0];
         console.log("name"+unitFileName);
         console.log("name"+fileName);
         // // var javaAppZipFilePath;
@@ -577,6 +580,98 @@ async function processZipFile(zipFilePath, evaluationTypes, projectType, fileNam
         subfolderContents = await readFolderContents(subfolderPath);
         console.log("sub foldersssss123 "+subfolderContents);
       }
+
+      if (evaluationTypes.includes('Jest')){
+        console.log("Jest here");
+        const zipContents = await readFolderContents(extractionFolder);
+        console.log(zipContents);
+        jestFilePath = zipContents.find((file) => file.endsWith('.js'));
+        console.log(jestFilePath);
+        const unitFileName = jestFilePath.split('.')[0];
+        console.log("name"+unitFileName);
+        console.log("name"+fileName);
+        // // var javaAppZipFilePath;
+        // const javaAppZipFilePath = path.join(__dirname, 'springapp.zip');
+        // if(!fs.existsSync(javaAppZipFilePath)){
+        //   console.error('File does not exist:', javaAppZipFilePath);
+        //   return;
+        // }
+        const fileId = new mongoose.Types.ObjectId('66f90a41c7e0e7ed88c78555');
+        const downloadStream = gfsDefaultScaffolding.openDownloadStream(fileId);
+        // create a folder with name defaultScaffoldings to store the zip file
+        const defaultScaffoldingFolder = path.join(__dirname, 'defaultScaffoldings');
+        if (!fs.existsSync(defaultScaffoldingFolder)) {
+          fs.mkdirSync(defaultScaffoldingFolder, { recursive: true });
+        }
+        const springAppZipFilePath = path.join(defaultScaffoldingFolder, 'reactapp.zip');
+        const writeStream = fs.createWriteStream(springAppZipFilePath);
+
+        downloadStream.pipe(writeStream);
+        writeStream.on('close', () => {
+          console.log('File downloaded successfully');
+      
+          // Now check if the file exists
+          if (!fs.existsSync(springAppZipFilePath)) {
+            console.error('File does not exist:', springAppZipFilePath);
+            return;
+          }
+      
+          // Extract the zip file to the folder
+          // const angularAppZip = new AdmZip(angularAppZipFilePath);
+          // angularAppZip.extractAllTo(extractionFolder);
+          // console.log('File extracted successfully');
+        });
+
+        writeStream.on('error', (err) => {
+          console.error('Error writing file:', err);
+        }
+        );
+        const javaAppZip = new AdmZip(springAppZipFilePath);
+        javaAppZip.extractAllTo(extractionFolder);
+        console.log(extractionFolder);
+
+        const javaAppFolder = path.join(extractionFolder, 'reactapp');
+        const renamedJavaAppFolder = path.join(extractionFolder, fileName);
+        if(fs.existsSync(renamedJavaAppFolder)){
+          console.log("folder exists");
+          
+          const javaAppFolder = path.join(extractionFolder, 'reactapp');
+          const javaAppContents = await readFolderContents(javaAppFolder);
+          for (const file of javaAppContents) {
+            const destinationFilePath = path.join(renamedJavaAppFolder);
+            // fs.copyFileSync(path.join(angularAppFolder, file), destinationFilePath);
+            // console.log(`Copied ${file} to: ${destinationFilePath}`);
+            await fs1.ensureDir(destinationFilePath);
+            await fs1.copy(path.join(javaAppFolder), destinationFilePath);
+            console.log(`Copied ${file} to: ${destinationFilePath}`);
+
+          }
+        } else {  
+          fs.renameSync(javaAppFolder, renamedJavaAppFolder);
+          console.log(`Renamed ${javaAppFolder} to ${renamedJavaAppFolder}`);
+        }
+
+        const destinationFolder = path.join(extractionFolder, fileName, 'react', 'tests');
+        if (!fs.existsSync(destinationFolder)) {
+          fs.mkdirSync(destinationFolder, { recursive: true });
+          console.log(`Created destination folder: ${destinationFolder}`);
+        }
+        for (const file of zipContents) {
+          const destinationFilePath = path.join(destinationFolder, path.basename(file));
+          if(file.endsWith('.js')){
+            fs.copyFileSync(path.join(extractionFolder, file), destinationFilePath);
+            console.log(`Copied ${file} to: ${destinationFilePath}`);
+          }
+        }
+        const zipfullContents = await readFolderContents(extractionFolder);
+        dynamicFolderName = zipfullContents.find((folder) =>
+          fs.statSync(path.join(extractionFolder, folder)).isDirectory()
+        );
+        console.log(dynamicFolderName);
+        const subfolderPath = path.join(extractionFolder, dynamicFolderName);
+        subfolderContents = await readFolderContents(subfolderPath);
+        console.log("sub foldersssss123 "+subfolderContents);
+      }
     }
 
     const runShFilePaths = [];
@@ -591,6 +686,8 @@ async function processZipFile(zipFilePath, evaluationTypes, projectType, fileNam
           // runShFilePaths.push(runShFilePath);
           // const csFilePath = path.join(extractionFolder, dynamicFolderName, 'nunit', 'test', 'TestProject', unitFilePath?unitFilePath:'UnitTest1.cs');
           const csFilePath = path.join(extractionFolder, fileName, 'nunit', 'test', 'TestProject', unitFilePath?unitFilePath:'UnitTest1.cs');
+          console.log("unitFilePath "+unitFilePath);
+          
           //  outputId = await testNames(csFilePath, extractionFolder, dynamicFolderName, subfolderContents, conn);
            outputId = await testNames(csFilePath, extractionFolder, fileName, subfolderContents, conn);
           console.log("diva "+outputId);
@@ -617,12 +714,22 @@ console.log("karmaOutputId "+karmaOutputId);
           runShFilePaths1.push(runShFilePath1);
           break;
         case 'junit':
-          const javaFilePath = path.join(extractionFolder, fileName, 'junit', 'test', 'java', 'com', 'example', 'springapp', unitFilePath?unitFilePath:'SpringappApplicationTests.java');
+          const javaFilePath = path.join(extractionFolder, fileName, 'junit', 'test', 'java', 'com', 'example', 'springapp', junitFilePath?junitFilePath:'SpringappApplicationTests.java');
           outputId = await junitShFile(extractionFolder, fileName, subfolderContents);
           console.log("outputId "+outputId);
           const runShFilePath2 = path.join(extractionFolder, fileName, 'junit', 'junit.sh');
           runShFilePaths.push(runShFilePath2);
           runShFilePaths1.push(runShFilePath2);
+          break;
+        case 'jest':
+          const jsFilePath = path.join(extractionFolder, fileName, 'react', 'tests', jestFilePath?jestFilePath:'App.test.js');
+          console.log(jsFilePath);
+          
+          outputId = await jestShFile(extractionFolder, fileName, subfolderContents);
+          console.log("outputId "+outputId);
+          const runShFilePath3 = path.join(extractionFolder, fileName, 'react', 'ṛeact.sh');
+          runShFilePaths.push(runShFilePath3);
+          runShFilePaths1.push(runShFilePath3);
           break;
         default:
           throw new Error(`Invalid evaluation type: ${type}`);
@@ -729,6 +836,8 @@ async function processZipFromDB(fileId, evaluationTypes, projectType, fileName) 
 
           const jsonObjects = [];
           for (const runShFilePath of runShFilePaths.runShFilePaths) {
+            console.log("processRunShFile dive: "+runShFilePath[0]);
+            
             const jsonString = await processRunShFile(runShFilePath, evaluationTypeWeights, extractionFolder, fileName);
             const jsonObject = JSON.parse(jsonString);
             jsonObjects.push(jsonObject);

@@ -129,7 +129,7 @@ const archiver = require('archiver');
 const { MongoClient, GridFSBucket } = require('mongodb');
 
 async function testNames(csFilePath, extractionFolder, dynamicFolderName, subfolderContents, db) {
-  console.log(csFilePath);
+  console.log("csss file "+csFilePath);
   console.log(subfolderContents);
   // console.log(db);
   let id;

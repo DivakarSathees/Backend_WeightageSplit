@@ -2,6 +2,8 @@ const fs = require('fs');
 const readline = require('readline');
 
 function readAndStoreEchoStatements(filePath) {
+  console.log("shecho"+filePath);
+  
     return new Promise((resolve, reject) => {
       const echoStatements = [];
       const rl = readline.createInterface({

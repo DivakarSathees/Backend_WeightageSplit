@@ -3,16 +3,23 @@ const readline = require('readline');
 const path = require('path');
 const { junitTestNames } = require('./junitTestNames');
 const { readAndStoreEchoStatements } = require('./shEchoStatements');
+const { jestTestNames } = require('./jestTestNames');
 
 async function processRunShFile(runShFilePath, evaluationTypeWeights, extractionFolder, fileName) {
     try {
       console.log("runShFilePath: ", runShFilePath);
+      console.log("react " + runShFilePath.replace(/\\/g, '/').includes("/react/"));
+      console.log("react " + runShFilePath.includes("\\react\\"));
+
+      
       // if runShFilePath is junit/junit.sh, 
-      if(runShFilePath.includes("junit"))        
+      if(runShFilePath.replace(/\\/g, '/').includes("/junit/"))        
       {
         echoStatements = await junitTestNames(extractionFolder, fileName);
         console.log("junitTestNames: ", echoStatements);
-        
+      }else if(runShFilePath.replace(/\\/g, '/').includes("/react/")){
+        echoStatements = await jestTestNames(extractionFolder, fileName);
+        console.log("echoStatements: ", echoStatements);        
       }else{
       echoStatements = await readAndStoreEchoStatements(runShFilePath);
       console.log("echoStatements: ", echoStatements);
@@ -48,6 +55,15 @@ async function processRunShFile(runShFilePath, evaluationTypeWeights, extraction
           testcases: [],
           testcase_run_command: `sh /home/coder/project/workspace/junit/junit.sh`, 
           testcase_path: '/home/coder/project/workspace/junit', 
+        };
+      }
+      if(folderName == "react")
+      {
+         jsonObject = {
+          evaluation_type: "Jest", // Use the folder name as the evaluation type
+          testcases: [],
+          testcase_run_command: `sh /home/coder/project/workspace/react/react.sh`, 
+          testcase_path: '/home/coder/project/workspace/react', 
         };
       }
   
