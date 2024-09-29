@@ -26,6 +26,7 @@ const { ObjectId } = require('mongodb');  // Import ObjectId
 const { GridFsStorage } = require('multer-gridfs-storage');
 const { GridFSBucket } = require('mongodb');
 const jestShFile = require('./jestShFile');
+const { puppeteerOutputFile } = require('./puppeteerOutputFile');
 const uri = "mongodb+srv://Divakar:HIGHjump@cluster0.grfzp.mongodb.net/Scaffolding?retryWrites=true&w=majority&appName=Cluster0";
 mongoose.connect(uri, {
   // useNewUrlParser: true,
@@ -200,7 +201,7 @@ function readFolderContents(folderPath) {
 let runShFilePaths1 = [];
 let outputId = 0;
 let karmaOutputId = 0;
-async function processZipFile(zipFilePath, evaluationTypes, projectType, fileName) {
+async function processZipFile(zipFilePath, evaluationTypes, projectType, fileName, puppeteerSource) {
   console.log("zipFilePath123 "+zipFilePath);
   // 
   outputId = 0;
@@ -208,6 +209,7 @@ async function processZipFile(zipFilePath, evaluationTypes, projectType, fileNam
   try {
     const zipFileNameWithoutExtension = path.basename(zipFilePath, '.zip');
     console.log(zipFileNameWithoutExtension);
+    console.log("source "+puppeteerSource);
     
     const extractionFolder = path.join(__dirname, 'dist1', zipFileNameWithoutExtension);
 
@@ -585,7 +587,7 @@ async function processZipFile(zipFilePath, evaluationTypes, projectType, fileNam
         console.log("Jest here");
         const zipContents = await readFolderContents(extractionFolder);
         console.log(zipContents);
-        jestFilePath = zipContents.find((file) => file.endsWith('.js'));
+        jestFilePath = zipContents.find((file) => file.endsWith('.test.js') );
         console.log(jestFilePath);
         const unitFileName = jestFilePath.split('.')[0];
         console.log("name"+unitFileName);
@@ -658,7 +660,7 @@ async function processZipFile(zipFilePath, evaluationTypes, projectType, fileNam
         }
         for (const file of zipContents) {
           const destinationFilePath = path.join(destinationFolder, path.basename(file));
-          if(file.endsWith('.js')){
+          if(file.endsWith('.test.js')){
             fs.copyFileSync(path.join(extractionFolder, file), destinationFilePath);
             console.log(`Copied ${file} to: ${destinationFilePath}`);
           }
@@ -671,6 +673,140 @@ async function processZipFile(zipFilePath, evaluationTypes, projectType, fileNam
         const subfolderPath = path.join(extractionFolder, dynamicFolderName);
         subfolderContents = await readFolderContents(subfolderPath);
         console.log("sub foldersssss123 "+subfolderContents);
+      }
+
+      if (evaluationTypes.includes('Puppeteer')){
+        console.log("puppeteer here");
+        const zipContents = await readFolderContents(extractionFolder);
+        console.log(zipContents);
+        const puppeteerFilePath = zipContents.find((file) => file == 'test.js');
+        console.log(puppeteerFilePath);
+        const unitFileName = puppeteerFilePath.split('.')[0];
+
+        // const puppeteerAppZipFilePath = path.join(__dirname, 'puppeteer.zip');
+        // if(!fs.existsSync(puppeteerAppZipFilePath)){
+        //   console.error('File does not exist:', puppeteerAppZipFilePath);
+        //   return;
+        // }
+        var fileId;
+        var renamezip = fileName;
+        // console.log(puppeteerSource.toLowerCase("angularapp"));
+        // console.log(puppeteerSource.toLowerCase("reactapp") == "reactapp");
+        
+        
+        if(puppeteerSource != null || puppeteerSource != undefined){
+        if(puppeteerSource.toLowerCase("angularapp")== "angularapp"){
+          console.log("angularapp");          
+          fileId = new mongoose.Types.ObjectId('66f57215e29957b57eb0b6b6');
+          renamezip = 'angularapp';
+        } else if(puppeteerSource.toLowerCase("reactapp")== "reactapp"){
+          console.log("reactapp Divakar");
+          
+          fileId = new mongoose.Types.ObjectId('66f90a41c7e0e7ed88c78555');
+          renamezip = 'reactapp';
+        } else if(puppeteerSource.toLowerCase("dotnetappmvc")== "dotnetappmvc"){
+          fileId = new mongoose.Types.ObjectId('66f57296fad85d1129292789');
+          renamezip = 'dotnetapp';
+        }}
+        if(fileId){
+        const downloadStream = gfsDefaultScaffolding.openDownloadStream(fileId);
+        // create a folder with name defaultScaffoldings to store the zip file
+        const defaultScaffoldingFolder = path.join(__dirname, 'defaultScaffoldings');
+        if (!fs.existsSync(defaultScaffoldingFolder)) {
+          fs.mkdirSync(defaultScaffoldingFolder, { recursive: true });
+        }
+        var puppeteerAppZipFilePath;
+        if(puppeteerSource.toLowerCase("angularapp")== "angularapp"){
+          puppeteerAppZipFilePath = path.join(defaultScaffoldingFolder, 'puppeteerangularapp.zip');
+        } else if(puppeteerSource.toLowerCase("reactapp")== "reactapp"){
+          puppeteerAppZipFilePath = path.join(defaultScaffoldingFolder, 'puppeteerreactapp.zip');
+        } else if(puppeteerSource.toLowerCase("dotnetappmvc")== "dotnetappmvc"){
+          puppeteerAppZipFilePath = path.join(defaultScaffoldingFolder, 'puppeteerdotnetappmvc.zip');
+        }
+        // const puppeteerAppZipFilePath = path.join(defaultScaffoldingFolder, 'puppeteer1.zip');
+        const writeStream = fs.createWriteStream(puppeteerAppZipFilePath);  
+        downloadStream.pipe(writeStream);
+        writeStream.on('close', () => {
+          console.log('File downloaded successfully');
+      
+          // Now check if the file exists
+          if (!fs.existsSync(puppeteerAppZipFilePath)) {
+            console.error('File does not exist:', puppeteerAppZipFilePath);
+            return;
+          }
+      
+          // Extract the zip file to the folder
+          // const angularAppZip = new AdmZip(angularAppZipFilePath);
+          // angularAppZip.extractAllTo(extractionFolder);
+          // console.log('File extracted successfully');
+        });
+
+        writeStream.on('error', (err) => {
+          console.error('Error writing file:', err);
+        }
+        );
+        const puppeteerAppZip = new AdmZip(puppeteerAppZipFilePath);
+        // const puppeteerFolder = path.join(extractionFolder, 'puppeteer');
+        puppeteerAppZip.extractAllTo(extractionFolder);
+        console.log(extractionFolder);
+        // rename the extracted folder to uploader zip file name
+        // fs.renameSync(path.join(extractionFolder, renamezip), 'puppeteer');
+
+        const puppeteerAppFolder = path.join(extractionFolder, renamezip);
+        const renamedPuppeteerAppFolder = path.join(extractionFolder, fileName);
+        if(fs.existsSync(renamedPuppeteerAppFolder)){
+          console.log("folder exists");
+          
+          const puppeteerAppFolder = path.join(extractionFolder, 'puppeteer');
+          const puppeteerAppContents = await readFolderContents(puppeteerAppFolder);
+          for (const file of puppeteerAppContents) {
+            const destinationFilePath = path.join(renamedPuppeteerAppFolder);
+            // fs.copyFileSync(path.join(angularAppFolder, file), destinationFilePath);
+            // console.log(`Copied ${file} to: ${destinationFilePath}`);
+            await fs1.ensureDir(destinationFilePath);
+            await fs1.copy(path.join(puppeteerAppFolder), destinationFilePath);
+            console.log(`Copied ${file} to: ${destinationFilePath}`);
+
+          }
+        } else {
+          fs.renameSync(puppeteerAppFolder, renamedPuppeteerAppFolder);
+          console.log(`Renamed ${puppeteerAppFolder} to ${renamedPuppeteerAppFolder}`);
+        }
+      }
+
+        const destinationFolder = path.join(extractionFolder, fileName, 'puppeteer');
+        if (!fs.existsSync(destinationFolder)) {
+          fs.mkdirSync(destinationFolder, { recursive: true });
+          console.log(`Created destination folder: ${destinationFolder}`);
+        }
+        for (const file of zipContents) {
+          const destinationFilePath = path.join(destinationFolder, path.basename(file));
+          if(file == 'test.js'){
+            fs.copyFileSync(path.join(extractionFolder, file), destinationFilePath);
+            console.log(`Copied ${file} to: ${destinationFilePath}`);
+            console.log(puppeteerSource);
+            
+            if(puppeteerSource){
+              // delete the folder named karma, junit, nunit, jest from the extraction folder, file name folder
+              const karmaFolder = path.join(extractionFolder, fileName, 'karma');
+              const junitFolder = path.join(extractionFolder, fileName, 'junit');
+              const nunitFolder = path.join(extractionFolder, fileName, 'nunit');
+              const jestFolder = path.join(extractionFolder, fileName, 'react');
+              fs1.removeSync(karmaFolder);
+              fs1.removeSync(junitFolder);
+              fs1.removeSync(nunitFolder);
+              fs1.removeSync(jestFolder);
+            }
+          }
+        }
+        const zipfullContents = await readFolderContents(extractionFolder);
+        dynamicFolderName = zipfullContents.find((folder) =>
+          fs.statSync(path.join(extractionFolder, folder)).isDirectory()
+        );
+        console.log(dynamicFolderName);
+        const subfolderPath = path.join(extractionFolder, dynamicFolderName);
+        subfolderContents = await readFolderContents(subfolderPath);
+        console.log("sub foldersssss123 "+subfolderContents);   
       }
     }
 
@@ -707,7 +843,7 @@ async function processZipFile(zipFilePath, evaluationTypes, projectType, fileNam
           console.log("asd7894563 "+subfolderContents);
           
           karmaOutputId = await karmaShFile(extractionFolder, fileName, subfolderContents);
-console.log("karmaOutputId "+karmaOutputId);
+          console.log("karmaOutputId "+karmaOutputId);
 
           const runShFilePath1 = path.join(extractionFolder, fileName, 'karma', 'karma.sh');
           runShFilePaths.push(runShFilePath1);
@@ -730,6 +866,15 @@ console.log("karmaOutputId "+karmaOutputId);
           const runShFilePath3 = path.join(extractionFolder, fileName, 'react', 'ṛeact.sh');
           runShFilePaths.push(runShFilePath3);
           runShFilePaths1.push(runShFilePath3);
+          break;
+        case 'puppeteer':
+          if(puppeteerSource){
+            outputId = await puppeteerOutputFile(extractionFolder, fileName, subfolderContents);
+            console.log("outputId "+outputId);
+          }
+          // no need to write sh file for puppeteer
+          const runShFilePath4 = path.join(extractionFolder, fileName, 'puppeteer', 'test.js');
+          runShFilePaths.push(runShFilePath4);
           break;
         default:
           throw new Error(`Invalid evaluation type: ${type}`);
@@ -754,6 +899,8 @@ app.post('/process-zip', upload.single('zipFile'), async (req, res) => {
   }
   console.log(req.file);
   console.log(new mongoose.Types.ObjectId(req.file.id));
+  console.log(req.body.puppeteerSource);
+  
   
   
   // const fileName = path.basename(req.file.originalname, '.zip');
@@ -765,12 +912,14 @@ app.post('/process-zip', upload.single('zipFile'), async (req, res) => {
   const evaluationTypes = req.body.evaluationTypes.split(',');
   const projectType = req.body.projectType;
   console.log(evaluationTypes);
+  console.log(req.body.puppeteerSource);
+  
 
   try {
     console.log(fileId);
     
     // const runShFilePaths = await processZipFile(zipFilePath, evaluationTypes, projectType, fileName);
-    const runShFilePaths = await processZipFromDB(fileId, evaluationTypes, projectType, fileName);
+    const runShFilePaths = await processZipFromDB(fileId, evaluationTypes, projectType, fileName, req.body.puppeteerSource);
     console.log("jsonObjects1");
     
     console.log(runShFilePaths);
@@ -803,7 +952,7 @@ app.post('/process-zip', upload.single('zipFile'), async (req, res) => {
   }
 });
 
-async function processZipFromDB(fileId, evaluationTypes, projectType, fileName) {
+async function processZipFromDB(fileId, evaluationTypes, projectType, fileName, puppeteerSource) {
   return new Promise((resolve, reject) => {
     try {
       // Stream the file from MongoDB GridFS
@@ -823,7 +972,7 @@ async function processZipFromDB(fileId, evaluationTypes, projectType, fileName) 
       writeStream.on('close', async () => {
         try {
           // Proceed with processing the zip file after it's saved locally
-          const runShFilePaths = await processZipFile(zipFilePath, evaluationTypes, projectType, fileName);
+          const runShFilePaths = await processZipFile(zipFilePath, evaluationTypes, projectType, fileName, puppeteerSource);
           console.log("runShFilePaths" +runShFilePaths.runShFilePaths);
           console.log("runShFilePaths1" +runShFilePaths.outputId);
           

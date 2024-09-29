@@ -17,7 +17,7 @@ function junitTestNames(extractionFolder, fileName) {
 
         rl.on('line', (line) => {
             line = line.trim(); // Clean up any leading/trailing whitespace
-            console.log("line: ", line);
+            // console.log("line: ", line);
             
             // Check for @Test annotation
             if (line.startsWith('@Test')) {

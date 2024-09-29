@@ -4,6 +4,7 @@ const path = require('path');
 const { junitTestNames } = require('./junitTestNames');
 const { readAndStoreEchoStatements } = require('./shEchoStatements');
 const { jestTestNames } = require('./jestTestNames');
+const { puppeteerTestNames } = require('./puppeteerTestNames');
 
 async function processRunShFile(runShFilePath, evaluationTypeWeights, extractionFolder, fileName) {
     try {
@@ -20,7 +21,12 @@ async function processRunShFile(runShFilePath, evaluationTypeWeights, extraction
       }else if(runShFilePath.replace(/\\/g, '/').includes("/react/")){
         echoStatements = await jestTestNames(extractionFolder, fileName);
         console.log("echoStatements: ", echoStatements);        
-      }else{
+      } else if(runShFilePath.replace(/\\/g, '/').includes("/puppeteer/")){
+        echoStatements = await puppeteerTestNames(extractionFolder, fileName);
+        console.log("echoStatements: ", echoStatements);
+      }
+      
+      else{
       echoStatements = await readAndStoreEchoStatements(runShFilePath);
       console.log("echoStatements: ", echoStatements);
     }
@@ -64,6 +70,15 @@ async function processRunShFile(runShFilePath, evaluationTypeWeights, extraction
           testcases: [],
           testcase_run_command: `sh /home/coder/project/workspace/react/react.sh`, 
           testcase_path: '/home/coder/project/workspace/react', 
+        };
+      }
+      if(folderName == "puppeteer")
+      {
+         jsonObject = {
+          evaluation_type: "Puppeteer", // Use the folder name as the evaluation type
+          testcases: [],
+          testcase_run_command: `node /home/coder/project/workspace/puppeteer/test.js`, 
+          testcase_path: '/home/coder/project/workspace/puppeteer', 
         };
       }
   
