@@ -399,7 +399,7 @@ async function processZipFile(zipFilePath, evaluationTypes, projectType, fileNam
         // return 0;
         // const angularAppZipFilePath = path.join('angularapp.zip');
         // get the zip angularapp from bd with id & store it in the folder
-        const fileId = new mongoose.Types.ObjectId('66f57215e29957b57eb0b6b6');
+        const fileId = new mongoose.Types.ObjectId('671c7055655e9da7e26c3b44');
         const downloadStream = gfsDefaultScaffolding.openDownloadStream(fileId);
         // create a folder with name defaultScaffoldings to store the zip file
         const defaultScaffoldingFolder = path.join(__dirname, 'defaultScaffoldings');
