@@ -57,7 +57,7 @@ conn.once('open', async () => {
     bucketName: 'defaultScaffolding'
   });
 
-  // const filePath = './springapp.zip';
+  // const filePath = './angularapp.zip';
   // if (!fs.existsSync(filePath)) {
   //   console.error('File does not exist:', filePath);
   //   return;
@@ -84,7 +84,7 @@ conn.once('open', async () => {
   //     console.log('File read complete.');
   //   });
 
-  //   const uploadStream = bucket.openUploadStream('springapp.zip');
+  //   const uploadStream = bucket.openUploadStream('angularapp.zip');
   //   const id = uploadStream.id;
   //   console.log('File upload started with id:', id);
 
@@ -101,7 +101,7 @@ conn.once('open', async () => {
   //     console.log('Upload stream closed.');
   //   });
 
-  //   const downloadStream = bucket.openDownloadStream(new ObjectId('66f57215e29957b57eb0b6b6'));
+  //   const downloadStream = bucket.openDownloadStream(new ObjectId('67363c362ca05e60082ae200'));
   //   const fileStream = fs.createWriteStream(`./output/path/ang.zip`);
   //   downloadStream.pipe(fileStream)  
   //   .on('error', (error) => {
@@ -399,7 +399,7 @@ async function processZipFile(zipFilePath, evaluationTypes, projectType, fileNam
         // return 0;
         // const angularAppZipFilePath = path.join('angularapp.zip');
         // get the zip angularapp from bd with id & store it in the folder
-        const fileId = new mongoose.Types.ObjectId('671c7055655e9da7e26c3b44');
+        const fileId = new mongoose.Types.ObjectId('67363c362ca05e60082ae200');
         const downloadStream = gfsDefaultScaffolding.openDownloadStream(fileId);
         // create a folder with name defaultScaffoldings to store the zip file
         const defaultScaffoldingFolder = path.join(__dirname, 'defaultScaffoldings');

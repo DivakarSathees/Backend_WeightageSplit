@@ -25,7 +25,10 @@ fi
 if [ -d "/home/coder/project/workspace/angularapp" ]
 then
     echo "project folder present"
+    find /home/coder/project/workspace/angularapp -type f -name "*.spec.ts" -delete
     cp /home/coder/project/workspace/karma/karma.conf.js /home/coder/project/workspace/angularapp/karma.conf.js;
+    cp /home/coder/project/workspace/karma/test.ts /home/coder/project/workspace/angularapp/src/test.ts;
+    cp /home/coder/project/workspace/karma/tsconfig.spec.json /home/coder/project/workspace/angularapp/tsconfig.spec.json;
 `;
 return new Promise(async (resolve, reject) => {
 // Iterate through each file in specFiles
