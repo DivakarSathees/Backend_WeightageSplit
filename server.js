@@ -506,7 +506,7 @@ async function processZipFile(zipFilePath, evaluationTypes, projectType, fileNam
         //   console.error('File does not exist:', javaAppZipFilePath);
         //   return;
         // }
-        const fileId = new mongoose.Types.ObjectId('67acb78f06dd0a8a2a3f8efa');
+        const fileId = new mongoose.Types.ObjectId('67acb9d3274df83ed2337b81');
         const downloadStream = gfsDefaultScaffolding.openDownloadStream(fileId);
         // create a folder with name defaultScaffoldings to store the zip file
         const defaultScaffoldingFolder = path.join(__dirname, 'defaultScaffoldings');
