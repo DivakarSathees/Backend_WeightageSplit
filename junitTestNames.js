@@ -4,7 +4,7 @@ const readline = require('readline');
 
 function junitTestNames(extractionFolder, fileName) {
     return new Promise((resolve, reject) => {
-        const junitTestPath = path.join(extractionFolder, fileName, 'junit', 'test', 'java', 'com', 'example', 'springapp', 'SpringappApplicationTests.java');
+        const junitTestPath = path.join(extractionFolder, fileName, 'junit', 'test', 'java', 'com', 'examly', 'springapp', 'SpringappApplicationTests.java');
         console.log("junitTestPath: ", junitTestPath);
 
         const junitTestNames = [];

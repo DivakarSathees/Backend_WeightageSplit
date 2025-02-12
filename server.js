@@ -101,7 +101,7 @@ conn.once('open', async () => {
   //     console.log('Upload stream closed.');
   //   });
 
-  //   const downloadStream = bucket.openDownloadStream(new ObjectId('67363c362ca05e60082ae200'));
+  //   const downloadStream = bucket.openDownloadStream(new ObjectId('67acd1f9d7545a897d51d4fa'));
   //   const fileStream = fs.createWriteStream(`./output/path/ang.zip`);
   //   downloadStream.pipe(fileStream)  
   //   .on('error', (error) => {
@@ -399,7 +399,7 @@ async function processZipFile(zipFilePath, evaluationTypes, projectType, fileNam
         // return 0;
         // const angularAppZipFilePath = path.join('angularapp.zip');
         // get the zip angularapp from bd with id & store it in the folder
-        const fileId = new mongoose.Types.ObjectId('67363c362ca05e60082ae200');
+        const fileId = new mongoose.Types.ObjectId('67acd1f9d7545a897d51d4fa');
         const downloadStream = gfsDefaultScaffolding.openDownloadStream(fileId);
         // create a folder with name defaultScaffoldings to store the zip file
         const defaultScaffoldingFolder = path.join(__dirname, 'defaultScaffoldings');
@@ -506,7 +506,7 @@ async function processZipFile(zipFilePath, evaluationTypes, projectType, fileNam
         //   console.error('File does not exist:', javaAppZipFilePath);
         //   return;
         // }
-        const fileId = new mongoose.Types.ObjectId('67acbcdc057e3c6b4966373d');
+        const fileId = new mongoose.Types.ObjectId('67accdfff1d6e64566b589d8');
         const downloadStream = gfsDefaultScaffolding.openDownloadStream(fileId);
         // create a folder with name defaultScaffoldings to store the zip file
         const defaultScaffoldingFolder = path.join(__dirname, 'defaultScaffoldings');
@@ -561,8 +561,9 @@ async function processZipFile(zipFilePath, evaluationTypes, projectType, fileNam
           console.log(`Renamed ${javaAppFolder} to ${renamedJavaAppFolder}`);
         }
 
-        const destinationFolder = path.join(extractionFolder, fileName, 'junit', 'test', 'java', 'com', 'example', 'springapp');
+        const destinationFolder = path.join(extractionFolder, fileName, 'junit', 'test', 'java', 'com', 'examly', 'springapp');
         if (!fs.existsSync(destinationFolder)) {
+          
           fs.mkdirSync(destinationFolder, { recursive: true });
           console.log(`Created destination folder: ${destinationFolder}`);
         }
@@ -850,7 +851,7 @@ async function processZipFile(zipFilePath, evaluationTypes, projectType, fileNam
           runShFilePaths1.push(runShFilePath1);
           break;
         case 'junit':
-          const javaFilePath = path.join(extractionFolder, fileName, 'junit', 'test', 'java', 'com', 'example', 'springapp', junitFilePath?junitFilePath:'SpringappApplicationTests.java');
+          const javaFilePath = path.join(extractionFolder, fileName, 'junit', 'test', 'java', 'com', 'examly', 'springapp', junitFilePath?junitFilePath:'SpringappApplicationTests.java');
           outputId = await junitShFile(extractionFolder, fileName, subfolderContents);
           console.log("outputId "+outputId);
           const runShFilePath2 = path.join(extractionFolder, fileName, 'junit', 'junit.sh');
