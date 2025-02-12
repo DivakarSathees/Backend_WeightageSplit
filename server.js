@@ -57,77 +57,77 @@ conn.once('open', async () => {
     bucketName: 'defaultScaffolding'
   });
 
-  // const filePath = './angularapp.zip';
-  // if (!fs.existsSync(filePath)) {
-  //   console.error('File does not exist:', filePath);
-  //   return;
-  // }
+  const filePath = './springapp.zip';
+  if (!fs.existsSync(filePath)) {
+    console.error('File does not exist:', filePath);
+    return;
+  }
 
-  // try {
-  //   const client = await MongoClient.connect(uri, { useUnifiedTopology: true });
-  // const db = client.db();
-  // const bucket = new GridFSBucket(db,{
-  //   bucketName: 'defaultScaffolding'
-  // });
+  try {
+    const client = await MongoClient.connect(uri, { useUnifiedTopology: true });
+  const db = client.db();
+  const bucket = new GridFSBucket(db,{
+    bucketName: 'defaultScaffolding'
+  });
 
-  //   const zipStream = fs.createReadStream(filePath);
+    const zipStream = fs.createReadStream(filePath);
     
-  //   zipStream.on('error', (err) => {
-  //     console.error('Error reading file:', err);
-  //   });
+    zipStream.on('error', (err) => {
+      console.error('Error reading file:', err);
+    });
 
-  //   zipStream.on('data', (chunk) => {
-  //     console.log(`Reading chunk of size: ${chunk.length}`);
-  //   });
+    zipStream.on('data', (chunk) => {
+      console.log(`Reading chunk of size: ${chunk.length}`);
+    });
 
-  //   zipStream.on('end', () => {
-  //     console.log('File read complete.');
-  //   });
+    zipStream.on('end', () => {
+      console.log('File read complete.');
+    });
 
-  //   const uploadStream = bucket.openUploadStream('angularapp.zip');
-  //   const id = uploadStream.id;
-  //   console.log('File upload started with id:', id);
+    const uploadStream = bucket.openUploadStream('springapp.zip');
+    const id = uploadStream.id;
+    console.log('File upload started with id:', id);
 
-  //  // Pipe file to MongoDB GridFS
-  //   zipStream.pipe(uploadStream)
-  //     .on('finish', async () => {
-  //       console.log('Zip file stored in MongoDB:', id);
-  //     })
-  //     .on('error', (err) => {
-  //       console.error('Error storing zip in MongoDB:', err);
-  //     });
+   // Pipe file to MongoDB GridFS
+    zipStream.pipe(uploadStream)
+      .on('finish', async () => {
+        console.log('Zip file stored in MongoDB:', id);
+      })
+      .on('error', (err) => {
+        console.error('Error storing zip in MongoDB:', err);
+      });
 
-  //   uploadStream.on('close', () => {
-  //     console.log('Upload stream closed.');
-  //   });
+    uploadStream.on('close', () => {
+      console.log('Upload stream closed.');
+    });
 
-  //   const downloadStream = bucket.openDownloadStream(new ObjectId('67363c362ca05e60082ae200'));
-  //   const fileStream = fs.createWriteStream(`./output/path/ang.zip`);
-  //   downloadStream.pipe(fileStream)  
-  //   .on('error', (error) => {
-  //     console.error('Error downloading file:', error);
-  //     // reject(error);
-  //   })
-  //   .on('finish', () => {
-  //     console.log('Zip file downloaded successfully.');
-  //     // resolve(id);
-  //   });
+    const downloadStream = bucket.openDownloadStream(new ObjectId('67363c362ca05e60082ae200'));
+    const fileStream = fs.createWriteStream(`./output/path/ang.zip`);
+    downloadStream.pipe(fileStream)  
+    .on('error', (error) => {
+      console.error('Error downloading file:', error);
+      // reject(error);
+    })
+    .on('finish', () => {
+      console.log('Zip file downloaded successfully.');
+      // resolve(id);
+    });
 
-  //   uploadStream.on('data', (chunk) => {
-  //     console.log(`Uploaded chunk of size: ${chunk.length}`);
-  //   });
+    uploadStream.on('data', (chunk) => {
+      console.log(`Uploaded chunk of size: ${chunk.length}`);
+    });
 
-  //   // Set a timeout for the upload process
-  //   setTimeout(() => {
-  //     if (!uploadStream.destroyed) {
-  //       console.log('Upload is taking too long, closing stream...');
-  //       uploadStream.end(); // Force the stream to end if it’s stuck
-  //     }
-  //   }, 10000); // 10-second timeout
+    // Set a timeout for the upload process
+    setTimeout(() => {
+      if (!uploadStream.destroyed) {
+        console.log('Upload is taking too long, closing stream...');
+        uploadStream.end(); // Force the stream to end if it’s stuck
+      }
+    }, 10000); // 10-second timeout
 
-  // } catch (mongoError) {
-  //   console.error('Error storing zip in MongoDB:', mongoError);
-  // }
+  } catch (mongoError) {
+    console.error('Error storing zip in MongoDB:', mongoError);
+  }
 });
 
 
@@ -506,7 +506,7 @@ async function processZipFile(zipFilePath, evaluationTypes, projectType, fileNam
         //   console.error('File does not exist:', javaAppZipFilePath);
         //   return;
         // }
-        const fileId = new mongoose.Types.ObjectId('66f6947369172bda2e86a478');
+        const fileId = new mongoose.Types.ObjectId('67acb78f06dd0a8a2a3f8efa');
         const downloadStream = gfsDefaultScaffolding.openDownloadStream(fileId);
         // create a folder with name defaultScaffoldings to store the zip file
         const defaultScaffoldingFolder = path.join(__dirname, 'defaultScaffoldings');
