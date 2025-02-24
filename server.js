@@ -262,7 +262,7 @@ async function processZipFile(zipFilePath, evaluationTypes, projectType, fileNam
         if(projectType.toLowerCase() == 'mvc'){
           // dotnetAppZipFilePath = path.join('dotnetappmvc.zip');
           // get the zip dotnetappmvc from bd with id & store it in the folder
-          const fileId = new mongoose.Types.ObjectId('66f57296fad85d1129292789');
+          const fileId = new mongoose.Types.ObjectId('67bc9b796bb5e279f4045687');
           const downloadStream = gfsDefaultScaffolding.openDownloadStream(fileId);
           // create a folder with name defaultScaffoldings to store the zip file
           const defaultScaffoldingFolder = path.join(__dirname, 'defaultScaffoldings');
@@ -293,7 +293,7 @@ async function processZipFile(zipFilePath, evaluationTypes, projectType, fileNam
         } else if(projectType.toLowerCase() == 'webapi'){
           // dotnetAppZipFilePath = path.join('dotnetappwebapi.zip');
           // get the zip dotnetappwebapi from bd with id & store it in the folder
-          const fileId = new mongoose.Types.ObjectId('66f5ceeca5101faa6066ffad');
+          const fileId = new mongoose.Types.ObjectId('67bca0d3633c65b342502344');
           const downloadStream = gfsDefaultScaffolding.openDownloadStream(fileId);
           // create a folder with name defaultScaffoldings to store the zip file
           const defaultScaffoldingFolder = path.join(__dirname, 'defaultScaffoldings');
@@ -706,7 +706,7 @@ async function processZipFile(zipFilePath, evaluationTypes, projectType, fileNam
           fileId = new mongoose.Types.ObjectId('66f90a41c7e0e7ed88c78555');
           renamezip = 'reactapp';
         } else if(puppeteerSource.toLowerCase("dotnetappmvc")== "dotnetappmvc"){
-          fileId = new mongoose.Types.ObjectId('66f57296fad85d1129292789');
+          fileId = new mongoose.Types.ObjectId('67bc9b796bb5e279f4045687');
           renamezip = 'dotnetapp';
         }}
         if(fileId){
